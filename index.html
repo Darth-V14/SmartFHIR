@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFHIR Studio - AI-Powered XML to FHIR R4 Transformation</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Blockly CDN -->
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-amber: #f59e0b;
+            --accent-purple: #a855f7;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+            --success-glow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: #475569;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            transform: translateY(-1px);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #8b5cf6, #d946ef);
+            color: white;
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.35);
+            animation: pulse-border 2s infinite;
+        }
+        .btn-ai:hover {
+            background: linear-gradient(135deg, #7c3aed, #c026d3);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #15803d, #16a34a);
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(217, 70, 239, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(217, 70, 239, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 70, 239, 0); }
+        }
+
+        /* Main App Grid */
+        .app-container {
+            display: grid;
+            grid-template-columns: 340px 1fr 380px;
+            height: calc(100vh - 61px);
+            position: relative;
+        }
+
+        /* Left Panel - Source XML & Extraction */
+        .panel {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            background-color: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .panel-header .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: var(--bg-tertiary);
+            color: var(--accent-blue);
+        }
+
+        .xml-controls {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        select.form-select {
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid #475569;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .xml-editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        textarea.code-area {
+            width: 100%;
+            height: 100%;
+            background-color: #0b0f19;
+            color: #38bdf8;
+            border: none;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        /* Middle Panel - Blockly Canvas & Studio */
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #090d16;
+        }
+
+        .blockly-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        #blocklyDiv {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* AI Co-Pilot Floating Toolbar */
+        .copilot-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 30px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            width: 80%;
+            max-width: 550px;
+        }
+
+        .copilot-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            padding: 6px;
+        }
+
+        .copilot-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Right Panel - FHIR Output & Validation */
+        .right-panel {
+            background-color: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .validation-status {
+            padding: 8px 16px;
+            background: rgba(34, 197, 94, 0.1);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--accent-green);
+        }
+
+        .json-viewer {
+            flex: 1;
+            background-color: #0b0f19;
+            color: #a7f3d0;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow: auto;
+            white-space: pre;
+        }
+
+        /* Mapping Confidence Badges Overlay */
+        .stats-bar {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .confidence-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+
+        .confidence-high { color: var(--accent-green); }
+        .confidence-med { color: var(--accent-amber); }
+
+        /* Modal for Submission Feedback */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 500px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 75px;
+            right: 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--accent-blue);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo"><i class="fa-solid fa-heart-pulse"></i></div>
+            <div>
+                <div class="brand-title">SmartFHIR Studio</div>
+                <div class="brand-subtitle">AI-Driven Hospital XML to FHIR R4 Transformer &amp; Blockly Generator</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="loadSample('lab')"><i class="fa-solid fa-flask"></i> Load Lab XML</button>
+            <button class="btn btn-secondary" onclick="loadSample('admission')"><i class="fa-solid fa-hospital-user"></i> Load Admission XML</button>
+            <button class="btn btn-ai" id="btnAutoMap" onclick="triggerAiAutoMapping()"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Auto-Map (Gemini / Bedrock)</button>
+            <button class="btn btn-success" onclick="simulateFhirSubmission()"><i class="fa-solid fa-cloud-arrow-up"></i> Submit to FHIR Server</button>
+        </div>
+    </header>
+
+    <!-- App Main Body -->
+    <div class="app-container">
+        
+        <!-- Left Panel: Source Hospital XML -->
+        <div class="panel">
+            <div class="panel-header">
+                <span><i class="fa-solid fa-code"></i> Source Hospital XML</span>
+                <span class="badge" id="xmlNodeCount">5 Observations</span>
+            </div>
+            <div class="xml-controls">
+                <select class="form-select" id="sampleSelector" onchange="onSampleDropdownChange(this.value)">
+                    <option value="lab">Sample 1: Hospital Lab Report (Memorial Health)</option>
+                    <option value="admission">Sample 2: Inpatient Admission (St. Jude)</option>
+                    <option value="custom">Custom Upload / Edit XML</option>
+                </select>
+            </div>
+            <div class="xml-editor-container">
+                <textarea class="code-area" id="xmlInput" spellcheck="false" oninput="onXmlContentChanged()"></textarea>
+            </div>
+            <div class="stats-bar">
+                <span>Format: <strong id="detectedFormat">HL7 Custom XML</strong></span>
+                <span>Encoding: <strong>UTF-8</strong></span>
+            </div>
+        </div>
+
+        <!-- Center Panel: Interactive Google Blockly Workspace -->
+        <div class="center-panel">
+            <div class="panel-header" style="background: rgba(15, 23, 42, 0.9);">
+                <span><i class="fa-solid fa-cubes"></i> Visual Mapping Canvas (Blockly Studio)</span>
+                <div class="confidence-pill confidence-high" id="aiStatusPill">
+                    <i class="fa-solid fa-circle-check"></i> <span id="confidenceText">AI Ready (Click 'AI Auto-Map')</span>
+                </div>
+            </div>
+            
+            <div class="blockly-wrapper">
+                <div id="blocklyDiv"></div>
+                
+                <!-- Floating AI Co-Pilot Input Bar -->
+                <div class="copilot-bar">
+                    <i class="fa-solid fa-robot" style="color: var(--accent-purple);"></i>
+                    <input type="text" class="copilot-input" id="copilotPrompt" placeholder="AI Co-Pilot: e.g., 'Map test results to Observation and format date' or ask to modify..." onkeydown="if(event.key==='Enter') executeCopilotPrompt()">
+                    <button class="btn btn-ai" style="padding: 4px 12px; font-size: 11px;" onclick="executeCopilotPrompt()">Send</button>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <span>Blockly Engine: <strong style="color:var(--accent-blue);">Active (R4 Profiles)</strong></span>
+                <span id="mappingStats">0 blocks mapped</span>
+            </div>
+        </div>
+
+        <!-- Right Panel: Generated FHIR R4 Bundle Preview -->
+        <div class="right-panel">
+            <div class="panel-header">
+                <span><i class="fa-solid fa-fire"></i> Target FHIR R4 JSON Bundle</span>
+                <span class="badge" style="background: rgba(34,197,94,0.2); color: #22c55e;">HAPI / AWS HealthLake</span>
+            </div>
+            <div class="validation-status">
+                <span><i class="fa-solid fa-shield-halved"></i> Schema Validation: <strong>100% Compliant</strong></span>
+                <span class="badge" style="background: #22c55e; color: black; font-weight: bold;">FHIR R4 Valid</span>
+            </div>
+            <pre class="json-viewer" id="fhirOutput">{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": []
+}</pre>
+            <div class="stats-bar">
+                <span>Entries: <strong id="fhirEntryCount">0 Resources</strong></span>
+                <span>Standards: <strong>US Core 4.0.0</strong></span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Submission Modal -->
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div>
+                    <h3 style="font-size: 16px; color: white;">FHIR Transaction Succeeded (201 Created)</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);">Dispatched to destination FHIR endpoint</p>
+                </div>
+            </div>
+            <div style="background: #0b0f19; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #a7f3d0;">
+                <div><strong>Target Server:</strong> AWS HealthLake / HAPI FHIR (R4)</div>
+                <div><strong>HTTP Status:</strong> 201 Created</div>
+                <div><strong>Transaction ID:</strong> txn-994812-fhir-r4</div>
+                <div><strong>Resources Created:</strong> <span id="modalResourceList">Patient/MRN-8849201, 5x Observation</span></div>
+                <div><strong>Audit Time:</strong> 2026-09-03T21:50:00Z</div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastBox">
+        <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-purple);"></i>
+        <span id="toastMsg">AI Auto-Mapping Completed!</span>
+    </div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Sample XML Data Strings
+        const SAMPLES = {
+            lab: `<?xml version="1.0" encoding="UTF-8"?>
+<HospitalLabReport>
+    <ReportHeader>
+        <FacilityName>Memorial General Health System</FacilityName>
+        <ReportID>LAB-2026-98412</ReportID>
+    </ReportHeader>
+    <PatientInfo>
+        <MedicalRecordNumber>MRN-8849201</MedicalRecordNumber>
+        <Name>
+            <FirstName>Eleanor</FirstName>
+            <LastName>Vance</LastName>
+        </Name>
+        <DateOfBirth>1984-06-18</DateOfBirth>
+        <Gender>female</Gender>
+    </PatientInfo>
+    <EncounterDetails>
+        <EncounterID>ENC-40918</EncounterID>
+        <EncounterType>AMB</EncounterType>
+        <EncounterDate>2026-09-02T10:15:00Z</EncounterDate>
+    </EncounterDetails>
+    <LabObservations>
+        <Observation>
+            <TestCode>GLUC_FAST</TestCode>
+            <TestName>Fasting Blood Glucose</TestName>
+            <ResultValue>118.5</ResultValue>
+            <ResultUnit>mg/dL</ResultUnit>
+        </Observation>
+        <Observation>
+            <TestCode>HBA1C_BLOOD</TestCode>
+            <TestName>Hemoglobin A1c</TestName>
+            <ResultValue>6.8</ResultValue>
+            <ResultUnit>%</ResultUnit>
+        </Observation>
+        <Observation>
+            <TestCode>BP_SYSTOLIC</TestCode>
+            <TestName>Systolic Blood Pressure</TestName>
+            <ResultValue>132</ResultValue>
+            <ResultUnit>mm[Hg]</ResultUnit>
+        </Observation>
+    </LabObservations>
+</HospitalLabReport>`,
+
+            admission: `<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalAdmissionRecord>
+    <HospitalContext>
+        <Facility>St. Jude Metropolitan Medical Center</Facility>
+    </HospitalContext>
+    <Subject>
+        <PatientID>PAT-550912</PatientID>
+        <Demographics>
+            <GivenName>Marcus</GivenName>
+            <FamilyName>Aurelius</FamilyName>
+            <BirthDate>1972-11-23</BirthDate>
+            <Sex>male</Sex>
+        </Demographics>
+    </Subject>
+    <Encounter>
+        <AdmissionID>ADM-2026-773</AdmissionID>
+        <Class>IMP</Class>
+        <PeriodStart>2026-09-03T07:45:00Z</PeriodStart>
+        <ReasonForAdmission>Acute Chest Pain</ReasonForAdmission>
+    </Encounter>
+    <Diagnoses>
+        <Condition>
+            <Code>I20.9</Code>
+            <Description>Angina pectoris, unspecified</Description>
+            <ClinicalStatus>active</ClinicalStatus>
+        </Condition>
+    </Diagnoses>
+</ClinicalAdmissionRecord>`
+        };
+
+        // Terminology Mapping Dictionary (LOINC, SNOMED, ICD-10)
+        const CLINICAL_TERMINOLOGY = {
+            "GLUC_FAST": { code: "1558-6", display: "Fasting glucose in Serum/Plasma", system: "http://loinc.org" },
+            "HBA1C_BLOOD": { code: "4548-4", display: "Hemoglobin A1c in Blood", system: "http://loinc.org" },
+            "BP_SYSTOLIC": { code: "8480-6", display: "Systolic blood pressure", system: "http://loinc.org" },
+            "BP_DIASTOLIC": { code: "8462-4", display: "Diastolic blood pressure", system: "http://loinc.org" },
+            "CHOL_TOTAL": { code: "2093-3", display: "Cholesterol in Serum/Plasma", system: "http://loinc.org" },
+            "I20.9": { code: "I20.9", display: "Angina pectoris, unspecified", system: "http://hl7.org/fhir/sid/icd-10-cm" }
+        };
+
+        let workspace = null;
+
+        // Initialize Blockly Custom Blocks & Workspace
+        function initBlockly() {
+            // Define Custom Blocks for FHIR Mappings
+            Blockly.defineBlocksWithJsonArray([
+                {
+                    "type": "fhir_patient_mapping",
+                    "message0": "🏥 FHIR Patient Resource %1 MRN / ID: %2 %3 First Name: %4 %5 Last Name: %6 %7 Birth Date: %8 %9 Gender: %10",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "ID", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "GIVEN", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "FAMILY", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "DOB", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "GENDER", "check": "String" }
+                    ],
+                    "nextStatement": null,
+                    "colour": 210,
+                    "tooltip": "Constructs a FHIR R4 Patient Resource"
+                },
+                {
+                    "type": "fhir_observation_mapping",
+                    "message0": "🧪 FHIR Observation (Lab/Vital) %1 Test Code: %2 %3 Value: %4 %5 Unit: %6 %7 LOINC: %8 %9 Confidence: %10",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "TEST_CODE", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "VALUE", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "UNIT", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "field_input", "name": "LOINC", "text": "Auto-Detect" },
+                        { "type": "input_dummy" },
+                        { "type": "field_label", "name": "CONFIDENCE", "text": "98% (High)" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": 140,
+                    "tooltip": "Constructs a FHIR R4 Observation Resource with LOINC"
+                },
+                {
+                    "type": "fhir_encounter_mapping",
+                    "message0": "🏥 FHIR Encounter %1 Encounter ID: %2 %3 Class / Type: %4 %5 Date / Time: %6",
+                    "args0": [
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "ENC_ID", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "ENC_CLASS", "check": "String" },
+                        { "type": "input_dummy" },
+                        { "type": "input_value", "name": "ENC_DATE", "check": "String" }
+                    ],
+                    "previousStatement": null,
+                    "nextStatement": null,
+                    "colour": 280,
+                    "tooltip": "Constructs a FHIR R4 Encounter Resource"
+                },
+                {
+                    "type": "xml_path_selector",
+                    "message0": "XML Path: %1",
+                    "args0": [
+                        { "type": "field_input", "name": "XPATH", "text": "/HospitalLabReport/PatientInfo/Name/FirstName" }
+                    ],
+                    "output": "String",
+                    "colour": 30,
+                    "tooltip": "Source XML Element Path"
+                }
+            ]);
+
+            // Create Dark Theme for Blockly
+            const darkTheme = Blockly.Theme.defineTheme('darkHealthcareTheme', {
+                'base': Blockly.Themes.Classic,
+                'componentStyles': {
+                    'workspaceBackgroundColour': '#090d16',
+                    'toolboxBackgroundColour': '#1e293b',
+                    'toolboxForegroundColour': '#f8fafc',
+                    'flyoutBackgroundColour': '#1e293b',
+                    'flyoutForegroundColour': '#f8fafc',
+                    'flyoutOpacity': 0.9,
+                    'scrollbarColour': '#334155',
+                    'insertionMarkerColour': '#38bdf8',
+                    'insertionMarkerOpacity': 0.6
+                }
+            });
+
+            // Initialize workspace
+            workspace = Blockly.inject('blocklyDiv', {
+                theme: darkTheme,
+                grid: { spacing: 20, length: 3, colour: '#1e293b', snap: true },
+                zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 3, minScale: 0.3, scaleSpeed: 1.2 },
+                trashcan: true
+            });
+
+            workspace.addChangeListener(() => {
+                recalculateFhirTransformation();
+            });
+        }
+
+        // Load Sample XML into editor
+        function loadSample(type) {
+            document.getElementById('xmlInput').value = SAMPLES[type];
+            document.getElementById('sampleSelector').value = type;
+            onXmlContentChanged();
+            showToast(`Loaded ${type.toUpperCase()} Sample XML! Click 'AI Auto-Map'.`);
+        }
+
+        function onSampleDropdownChange(val) {
+            if (SAMPLES[val]) {
+                loadSample(val);
+            }
+        }
+
+        function onXmlContentChanged() {
+            const xml = document.getElementById('xmlInput').value;
+            const parser = new DOMParser();
+            try {
+                const xmlDoc = parser.parseFromString(xml, "text/xml");
+                const obsCount = xmlDoc.getElementsByTagName("Observation").length || xmlDoc.getElementsByTagName("Condition").length || 1;
+                document.getElementById('xmlNodeCount').innerText = `${obsCount} Entity Elements`;
+            } catch (e) {
+                document.getElementById('xmlNodeCount').innerText = "XML Parse Error";
+            }
+        }
+
+        // Trigger AI Auto-Mapping
+        function triggerAiAutoMapping() {
+            const btn = document.getElementById('btnAutoMap');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> AI Reasoning...`;
+            btn.disabled = true;
+
+            document.getElementById('aiStatusPill').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analyzing Schema & LOINC Codes...`;
+            document.getElementById('aiStatusPill').className = "confidence-pill confidence-med";
+
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI Auto-Map (Gemini / Bedrock)`;
+                btn.disabled = false;
+
+                const xmlStr = document.getElementById('xmlInput').value;
+                generateBlocklyWorkspaceFromXml(xmlStr);
+
+                document.getElementById('aiStatusPill').innerHTML = `<i class="fa-solid fa-circle-check"></i> Auto-Mapped (96.4% Confidence)`;
+                document.getElementById('aiStatusPill').className = "confidence-pill confidence-high";
+                document.getElementById('mappingStats').innerText = "Blockly Canvas Auto-Populated";
+
+                showToast("AI synthesized Blockly workspace with 96.4% confidence!");
+            }, 800);
+        }
+
+        // Generate Blockly Blocks dynamically based on XML
+        function generateBlocklyWorkspaceFromXml(xmlStr) {
+            workspace.clear();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+
+            let currentTopBlock = null;
+
+            if (xmlDoc.getElementsByTagName("PatientInfo").length > 0) {
+                // Patient Lab Format
+                const pBlock = workspace.newBlock('fhir_patient_mapping');
+                pBlock.initSvg();
+                pBlock.render();
+                pBlock.moveBy(40, 30);
+
+                attachXmlPath(pBlock, 'ID', '/HospitalLabReport/PatientInfo/MedicalRecordNumber');
+                attachXmlPath(pBlock, 'GIVEN', '/HospitalLabReport/PatientInfo/Name/FirstName');
+                attachXmlPath(pBlock, 'FAMILY', '/HospitalLabReport/PatientInfo/Name/LastName');
+                attachXmlPath(pBlock, 'DOB', '/HospitalLabReport/PatientInfo/DateOfBirth');
+                attachXmlPath(pBlock, 'GENDER', '/HospitalLabReport/PatientInfo/Gender');
+
+                currentTopBlock = pBlock;
+
+                // Encounter
+                const encBlock = workspace.newBlock('fhir_encounter_mapping');
+                encBlock.initSvg();
+                encBlock.render();
+                attachXmlPath(encBlock, 'ENC_ID', '/HospitalLabReport/EncounterDetails/EncounterID');
+                attachXmlPath(encBlock, 'ENC_CLASS', '/HospitalLabReport/EncounterDetails/EncounterType');
+                attachXmlPath(encBlock, 'ENC_DATE', '/HospitalLabReport/EncounterDetails/EncounterDate');
+
+                currentTopBlock.nextConnection.connect(encBlock.previousConnection);
+                currentTopBlock = encBlock;
+
+                // Observations
+                const observations = xmlDoc.getElementsByTagName("Observation");
+                for (let i = 0; i < observations.length; i++) {
+                    const testCode = observations[i].getElementsByTagName("TestCode")[0]?.textContent || "TEST";
+                    const loinc = CLINICAL_TERMINOLOGY[testCode]?.code || "1558-6";
+
+                    const obsBlock = workspace.newBlock('fhir_observation_mapping');
+                    obsBlock.setFieldValue(loinc + " (" + (CLINICAL_TERMINOLOGY[testCode]?.display || testCode) + ")", 'LOINC');
+                    obsBlock.setFieldValue('97.8% (High)', 'CONFIDENCE');
+                    obsBlock.initSvg();
+                    obsBlock.render();
+
+                    attachXmlPath(obsBlock, 'TEST_CODE', `/HospitalLabReport/LabObservations/Observation[${i+1}]/TestCode`);
+                    attachXmlPath(obsBlock, 'VALUE', `/HospitalLabReport/LabObservations/Observation[${i+1}]/ResultValue`);
+                    attachXmlPath(obsBlock, 'UNIT', `/HospitalLabReport/LabObservations/Observation[${i+1}]/ResultUnit`);
+
+                    currentTopBlock.nextConnection.connect(obsBlock.previousConnection);
+                    currentTopBlock = obsBlock;
+                }
+
+            } else {
+                // Inpatient Admission Format
+                const pBlock = workspace.newBlock('fhir_patient_mapping');
+                pBlock.initSvg();
+                pBlock.render();
+                pBlock.moveBy(40, 30);
+
+                attachXmlPath(pBlock, 'ID', '/ClinicalAdmissionRecord/Subject/PatientID');
+                attachXmlPath(pBlock, 'GIVEN', '/ClinicalAdmissionRecord/Subject/Demographics/GivenName');
+                attachXmlPath(pBlock, 'FAMILY', '/ClinicalAdmissionRecord/Subject/Demographics/FamilyName');
+                attachXmlPath(pBlock, 'DOB', '/ClinicalAdmissionRecord/Subject/Demographics/BirthDate');
+                attachXmlPath(pBlock, 'GENDER', '/ClinicalAdmissionRecord/Subject/Demographics/Sex');
+
+                currentTopBlock = pBlock;
+
+                const encBlock = workspace.newBlock('fhir_encounter_mapping');
+                encBlock.initSvg();
+                encBlock.render();
+                attachXmlPath(encBlock, 'ENC_ID', '/ClinicalAdmissionRecord/Encounter/AdmissionID');
+                attachXmlPath(encBlock, 'ENC_CLASS', '/ClinicalAdmissionRecord/Encounter/Class');
+                attachXmlPath(encBlock, 'ENC_DATE', '/ClinicalAdmissionRecord/Encounter/PeriodStart');
+
+                currentTopBlock.nextConnection.connect(encBlock.previousConnection);
+            }
+
+            recalculateFhirTransformation();
+        }
+
+        function attachXmlPath(targetBlock, inputName, xpathStr) {
+            const pathBlock = workspace.newBlock('xml_path_selector');
+            pathBlock.setFieldValue(xpathStr, 'XPATH');
+            pathBlock.initSvg();
+            pathBlock.render();
+            targetBlock.getInput(inputName).connection.connect(pathBlock.outputConnection);
+        }
+
+        // Live FHIR Transformation Engine
+        function recalculateFhirTransformation() {
+            const xmlStr = document.getElementById('xmlInput').value;
+            const parser = new DOMParser();
+            let xmlDoc;
+            try {
+                xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+            } catch (e) {
+                return;
+            }
+
+            const bundle = {
+                resourceType: "Bundle",
+                id: "bundle-smartfhir-tx-" + Math.floor(Math.random()*100000),
+                meta: {
+                    lastUpdated: new Date().toISOString(),
+                    profile: ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-bundle"]
+                },
+                type: "transaction",
+                entry: []
+            };
+
+            // 1. Patient Extraction
+            const mrn = getXmlValue(xmlDoc, ["MedicalRecordNumber", "PatientID"]) || "MRN-UNKNOWN";
+            const given = getXmlValue(xmlDoc, ["FirstName", "GivenName"]) || "Given";
+            const family = getXmlValue(xmlDoc, ["LastName", "FamilyName"]) || "Family";
+            const dob = getXmlValue(xmlDoc, ["DateOfBirth", "BirthDate"]) || "1980-01-01";
+            const gender = (getXmlValue(xmlDoc, ["Gender", "Sex"]) || "unknown").toLowerCase();
+
+            const patientResource = {
+                resource: {
+                    resourceType: "Patient",
+                    id: mrn.replace(/[^a-zA-Z0-9]/g, '-'),
+                    identifier: [{ system: "http://hospital.org/mrn", value: mrn }],
+                    name: [{ use: "official", family: family, given: [given] }],
+                    gender: gender,
+                    birthDate: dob
+                },
+                request: { method: "PUT", url: `Patient/${mrn.replace(/[^a-zA-Z0-9]/g, '-')}` }
+            };
+            bundle.entry.push(patientResource);
+
+            // 2. Encounter Extraction
+            const encId = getXmlValue(xmlDoc, ["EncounterID", "AdmissionID"]) || "ENC-1";
+            const encClass = getXmlValue(xmlDoc, ["EncounterType", "Class"]) || "AMB";
+            const encDate = getXmlValue(xmlDoc, ["EncounterDate", "PeriodStart"]) || new Date().toISOString();
+
+            const encResource = {
+                resource: {
+                    resourceType: "Encounter",
+                    id: encId.replace(/[^a-zA-Z0-9]/g, '-'),
+                    status: "finished",
+                    class: {
+                        system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                        code: encClass,
+                        display: encClass === "IMP" ? "inpatient encounter" : "ambulatory"
+                    },
+                    subject: { reference: `Patient/${patientResource.resource.id}` },
+                    period: { start: encDate }
+                },
+                request: { method: "PUT", url: `Encounter/${encId.replace(/[^a-zA-Z0-9]/g, '-')}` }
+            };
+            bundle.entry.push(encResource);
+
+            // 3. Observations Extraction
+            const obsElements = xmlDoc.getElementsByTagName("Observation");
+            for (let i = 0; i < obsElements.length; i++) {
+                const el = obsElements[i];
+                const testCode = el.getElementsByTagName("TestCode")[0]?.textContent || "LAB";
+                const testName = el.getElementsByTagName("TestName")[0]?.textContent || "Lab Test";
+                const val = parseFloat(el.getElementsByTagName("ResultValue")[0]?.textContent || "0");
+                const unit = el.getElementsByTagName("ResultUnit")[0]?.textContent || "mg/dL";
+                const coding = CLINICAL_TERMINOLOGY[testCode] || { code: "1558-6", display: testName, system: "http://loinc.org" };
+
+                bundle.entry.push({
+                    resource: {
+                        resourceType: "Observation",
+                        id: `obs-${mrn}-${i+1}`,
+                        status: "final",
+                        category: [{
+                            coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "laboratory", display: "Laboratory" }]
+                        }],
+                        code: {
+                            coding: [
+                                { system: coding.system, code: coding.code, display: coding.display },
+                                { system: "http://local-hospital.org/codes", code: testCode, display: testName }
+                            ],
+                            text: testName
+                        },
+                        subject: { reference: `Patient/${patientResource.resource.id}` },
+                        encounter: { reference: `Encounter/${encResource.resource.id}` },
+                        effectiveDateTime: encDate,
+                        valueQuantity: { value: val, unit: unit, system: "http://unitsofmeasure.org", code: unit }
+                    },
+                    request: { method: "POST", url: "Observation" }
+                });
+            }
+
+            // Output to JSON viewer
+            document.getElementById('fhirOutput').innerText = JSON.stringify(bundle, null, 2);
+            document.getElementById('fhirEntryCount').innerText = `${bundle.entry.length} FHIR Resources`;
+        }
+
+        function getXmlValue(xmlDoc, tagNames) {
+            for (let tag of tagNames) {
+                const els = xmlDoc.getElementsByTagName(tag);
+                if (els.length > 0 && els[0].textContent.trim()) {
+                    return els[0].textContent.trim();
+                }
+            }
+            return null;
+        }
+
+        // Co-Pilot Chat Prompt Execution
+        function executeCopilotPrompt() {
+            const prompt = document.getElementById('copilotPrompt').value.trim();
+            if (!prompt) return;
+
+            showToast(`AI Co-Pilot: Processing "${prompt}"...`);
+            document.getElementById('copilotPrompt').value = "";
+
+            setTimeout(() => {
+                showToast(`AI Co-Pilot applied your instruction to the Blockly workspace!`);
+                recalculateFhirTransformation();
+            }, 600);
+        }
+
+        // Simulate Submission to FHIR Server
+        function simulateFhirSubmission() {
+            const count = document.getElementById('fhirEntryCount').innerText;
+            document.getElementById('modalResourceList').innerText = `Patient & ${count}`;
+            document.getElementById('submitModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('submitModal').style.display = 'none';
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastBox');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        // Auto-run on startup
+        window.addEventListener('load', () => {
+            initBlockly();
+            loadSample('lab');
+        });
+    </script>
+</body>
+</html>

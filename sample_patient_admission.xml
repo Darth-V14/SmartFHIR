@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalAdmissionRecord>
+    <HospitalContext>
+        <OrganizationID>ORG-STJUDE-900</OrganizationID>
+        <Facility>St. Jude Metropolitan Medical Center</Facility>
+        <Timestamp>2026-09-03T08:00:00Z</Timestamp>
+    </HospitalContext>
+    <Subject>
+        <PatientID>PAT-550912</PatientID>
+        <Demographics>
+            <GivenName>Marcus</GivenName>
+            <FamilyName>Aurelius</FamilyName>
+            <BirthDate>1972-11-23</BirthDate>
+            <Sex>male</Sex>
+            <MaritalStatus>M</MaritalStatus>
+            <Language>en</Language>
+        </Demographics>
+    </Subject>
+    <Encounter>
+        <AdmissionID>ADM-2026-773</AdmissionID>
+        <Class>IMP</Class>
+        <PeriodStart>2026-09-03T07:45:00Z</PeriodStart>
+        <AttendingDoctor>Dr. Sarah Jenkins, MD</AttendingDoctor>
+        <Department>Cardiology Inpatient Ward</Department>
+        <ReasonForAdmission>Acute Chest Pain and Shortness of Breath</ReasonForAdmission>
+    </Encounter>
+    <Diagnoses>
+        <Condition>
+            <Code>I20.9</Code>
+            <Description>Angina pectoris, unspecified</Description>
+            <ClinicalStatus>active</ClinicalStatus>
+            <VerificationStatus>confirmed</VerificationStatus>
+            <OnsetDateTime>2026-09-03T06:30:00Z</OnsetDateTime>
+        </Condition>
+        <Condition>
+            <Code>I10</Code>
+            <Description>Essential (primary) hypertension</Description>
+            <ClinicalStatus>active</ClinicalStatus>
+            <VerificationStatus>confirmed</VerificationStatus>
+            <OnsetDateTime>2018-05-10T00:00:00Z</OnsetDateTime>
+        </Condition>
+    </Diagnoses>
+    <VitalSigns>
+        <Item>
+            <Name>HeartRate</Name>
+            <Value>98</Value>
+            <Unit>beats/min</Unit>
+            <RecordedAt>2026-09-03T07:50:00Z</RecordedAt>
+        </Item>
+        <Item>
+            <Name>OxygenSaturation</Name>
+            <Value>94</Value>
+            <Unit>%</Unit>
+            <RecordedAt>2026-09-03T07:50:00Z</RecordedAt>
+        </Item>
+    </VitalSigns>
+</ClinicalAdmissionRecord>

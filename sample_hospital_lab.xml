@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HospitalLabReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ReportHeader>
+        <FacilityName>Memorial General Health System</FacilityName>
+        <ReportID>LAB-2026-98412</ReportID>
+        <GeneratedDateTime>2026-09-02T14:30:00Z</GeneratedDateTime>
+    </ReportHeader>
+    <PatientInfo>
+        <MedicalRecordNumber>MRN-8849201</MedicalRecordNumber>
+        <NationalIdentifier>SSN-992-12-4411</NationalIdentifier>
+        <Name>
+            <FirstName>Eleanor</FirstName>
+            <LastName>Vance</LastName>
+        </Name>
+        <DateOfBirth>1984-06-18</DateOfBirth>
+        <Gender>female</Gender>
+        <Contact>
+            <Phone>555-839-2011</Phone>
+            <Email>eleanor.vance@example.com</Email>
+            <Address>
+                <Street>742 Evergreen Terrace</Street>
+                <City>Springfield</City>
+                <State>IL</State>
+                <PostalCode>62704</PostalCode>
+                <Country>USA</Country>
+            </Address>
+        </Contact>
+    </PatientInfo>
+    <EncounterDetails>
+        <EncounterID>ENC-40918</EncounterID>
+        <EncounterType>AMB</EncounterType>
+        <EncounterDate>2026-09-02T10:15:00Z</EncounterDate>
+        <OrderingPhysician>Dr. Robert Chen, MD (NPI: 1982736450)</OrderingPhysician>
+    </EncounterDetails>
+    <LabObservations>
+        <Observation>
+            <TestCode>GLUC_FAST</TestCode>
+            <TestName>Fasting Blood Glucose</TestName>
+            <ResultValue>118.5</ResultValue>
+            <ResultUnit>mg/dL</ResultUnit>
+            <ReferenceRange>70.0 - 99.0</ReferenceRange>
+            <Interpretation>High</Interpretation>
+            <Status>final</Status>
+            <EffectiveDateTime>2026-09-02T10:30:00Z</EffectiveDateTime>
+        </Observation>
+        <Observation>
+            <TestCode>HBA1C_BLOOD</TestCode>
+            <TestName>Hemoglobin A1c</TestName>
+            <ResultValue>6.8</ResultValue>
+            <ResultUnit>%</ResultUnit>
+            <ReferenceRange>4.0 - 5.6</ReferenceRange>
+            <Interpretation>High (Prediabetes/Diabetes)</Interpretation>
+            <Status>final</Status>
+            <EffectiveDateTime>2026-09-02T10:30:00Z</EffectiveDateTime>
+        </Observation>
+        <Observation>
+            <TestCode>CHOL_TOTAL</TestCode>
+            <TestName>Total Cholesterol</TestName>
+            <ResultValue>215.0</ResultValue>
+            <ResultUnit>mg/dL</ResultUnit>
+            <ReferenceRange>&lt; 200.0</ReferenceRange>
+            <Interpretation>Borderline High</Interpretation>
+            <Status>final</Status>
+            <EffectiveDateTime>2026-09-02T10:30:00Z</EffectiveDateTime>
+        </Observation>
+        <Observation>
+            <TestCode>BP_SYSTOLIC</TestCode>
+            <TestName>Systolic Blood Pressure</TestName>
+            <ResultValue>132</ResultValue>
+            <ResultUnit>mm[Hg]</ResultUnit>
+            <ReferenceRange>&lt; 120</ReferenceRange>
+            <Interpretation>Prehypertension</Interpretation>
+            <Status>final</Status>
+            <EffectiveDateTime>2026-09-02T10:20:00Z</EffectiveDateTime>
+        </Observation>
+        <Observation>
+            <TestCode>BP_DIASTOLIC</TestCode>
+            <TestName>Diastolic Blood Pressure</TestName>
+            <ResultValue>86</ResultValue>
+            <ResultUnit>mm[Hg]</ResultUnit>
+            <ReferenceRange>&lt; 80</ReferenceRange>
+            <Interpretation>Prehypertension</Interpretation>
+            <Status>final</Status>
+            <EffectiveDateTime>2026-09-02T10:20:00Z</EffectiveDateTime>
+        </Observation>
+    </LabObservations>
+</HospitalLabReport>
